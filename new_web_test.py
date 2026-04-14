@@ -6,10 +6,22 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
+# 配置 Linux 容器专用 Chrome 启动参数
 chrome_options = Options()
-chrome_options.add_argument("--headless=new")  # 无头模式，无界面运行
-chrome_options.add_argument("--no-sandbox")    # 容器必备，绕过安全限制
-chrome_options.add_argument("--disable-dev-shm-usage")  # 容器必备，解决内存不足
+# 无头模式（无界面运行，容器必备）
+chrome_options.add_argument("--headless=new")
+# 容器必备：绕过沙箱限制
+chrome_options.add_argument("--no-sandbox")
+# 容器必备：解决/dev/shm内存不足导致崩溃
+chrome_options.add_argument("--disable-dev-shm-usage")
+# 解决 DevToolsActivePort 报错的核心参数
+chrome_options.add_argument("--remote-debugging-port=9222")
+# 禁用GPU加速（容器无显卡，必加）
+chrome_options.add_argument("--disable-gpu")
+# 禁用扩展，避免干扰
+chrome_options.add_argument("--disable-extensions")
+# 禁用弹窗，避免阻塞
+chrome_options.add_argument("--disable-popup-blocking")
 
 service = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service, options=chrome_options)
