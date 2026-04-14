@@ -4,8 +4,15 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
-service=Service(executable_path="../chromedriver.exe")
-driver=webdriver.Chrome(service=service)
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
+chrome_options = Options()
+chrome_options.add_argument("--headless=new")  # 无头模式，无界面运行
+chrome_options.add_argument("--no-sandbox")    # 容器必备，绕过安全限制
+chrome_options.add_argument("--disable-dev-shm-usage")  # 容器必备，解决内存不足
+
+service = Service(ChromeDriverManager().install())
+driver = webdriver.Chrome(service=service, options=chrome_options)
 driver.get("https://automationintesting.online/")
 driver.maximize_window()
 wait=WebDriverWait(driver,10)    #初始化等待对象，driver 最大等待秒数
