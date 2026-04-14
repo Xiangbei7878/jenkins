@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 from selenium.webdriver.chrome.options import Options
 import os
+from webdriver_manager.chrome import ChromeDriverManager
 
 # ===================== 容器专用 Chrome 配置（绝对不崩溃）=====================
 chrome_options = Options()
@@ -19,8 +20,8 @@ chrome_options.add_argument("--disable-popup-blocking")
 chrome_options.add_argument("--disable-setuid-sandbox")
 chrome_options.add_argument(f"--user-data-dir=/tmp/chrome_profile_{os.getpid()}")
 
-# 关键：直接用系统驱动，不自动下载，彻底解决崩溃
-service = Service(executable_path="/usr/bin/chromedriver")
+# 关键：用 webdriver-manager 自动下载匹配的驱动，彻底解决版本不匹配
+service = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service, options=chrome_options)
 
 # ===================== 你的测试逻辑（完全保留）=====================
@@ -58,9 +59,6 @@ driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary.w-100.mb-3").click(
 driver.find_element(By.LINK_TEXT, "Admin").click()
 time.sleep(5)
 driver.find_element(By.PARTIAL_LINK_TEXT, "Messages").click()
-
-# 容器里不能用 input(...) 会卡住，必须删掉！
-# input(...)
 
 # 最后关闭浏览器（规范写法）
 time.sleep(3)
